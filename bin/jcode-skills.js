@@ -96,7 +96,16 @@ function installJcodeSkills(options = {}) {
       ? `\n## Required PAUL resources\n\n${resolved.references.map(reference => `- ${reference}`).join('\n')}\n`
       : '';
     const description = adaptJcodeText(skillDescription(name, command));
-    const skill = `---\nname: paul-${name}\ndescription: ${yaml(description)}\n---\n\n${body.trim()}\n${references}`;
+    const resourceResolution = `
+## Jcode resource resolution
+
+Bundled PAUL resources live under \`paul-framework/\` beside this skill's \`SKILL.md\`.
+Before following any bundled resource reference, call \`skill_manage\` with
+\`{"action":"read","name":"paul-${name}"}\`. Use the parent directory of the returned
+\`Path\` as this skill's base directory, then resolve \`paul-framework/...\` from there.
+Do not guess the skill's filesystem path.
+`;
+    const skill = `---\nname: paul-${name}\ndescription: ${yaml(description)}\n---\n\n${resourceResolution.trim()}\n\n${body.trim()}\n${references}`;
     fs.writeFileSync(path.join(skillDir, 'SKILL.md'), skill);
   }
 
