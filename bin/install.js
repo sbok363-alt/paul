@@ -24,7 +24,7 @@ ${cyan}  ██████╗  █████╗ ██╗   ██╗██�
   ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝${reset}
 
   PAUL Framework ${dim}v${pkg.version}${reset}
-  Plan-Apply-Unify Loop for Claude Code and Codex
+  Plan-Apply-Unify Loop for Claude Code, Codex, and Jcode
 `;
 
 // Parse args
@@ -32,6 +32,7 @@ const args = process.argv.slice(2);
 const hasGlobal = args.includes('--global') || args.includes('-g');
 const hasLocal = args.includes('--local') || args.includes('-l');
 const hasCodex = args.includes('--codex');
+const hasJcode = args.includes('--jcode');
 
 // Parse --config-dir argument
 function parseConfigDirArg() {
@@ -64,6 +65,7 @@ if (hasHelp) {
     ${cyan}-l, --local${reset}               Install locally (to ./.claude in current directory)
     ${cyan}-c, --config-dir <path>${reset}   Specify custom Claude config directory
     ${cyan}    --codex${reset}                Install Codex skills (local by default; combine with --global)
+    ${cyan}    --jcode${reset}                Install Jcode skills (local by default; combine with --global)
     ${cyan}-h, --help${reset}                Show this help message
 
   ${yellow}Examples:${reset}
@@ -79,10 +81,13 @@ if (hasHelp) {
     ${dim}# Install PAUL skills for Codex in this project${reset}
     npx paul-framework --codex
 
+    ${dim}# Install PAUL skills for Jcode in this project${reset}
+    npx paul-framework --jcode
+
   ${yellow}What gets installed:${reset}
     commands/paul/     - Slash commands (/paul:init, /paul:plan, etc.)
     paul-framework/    - Templates, workflows, references, rules
-    .agents/skills/    - PAUL skills for Codex (with --codex)
+    .agents/skills/    - PAUL skills for Codex or Jcode (with --codex / --jcode)
 `);
   process.exit(0);
 }
@@ -176,11 +181,15 @@ function install(isGlobal) {
 `);
 }
 
-function installCodex(isGlobal) {
-  const src = path.join(__dirname, '..');
-  const skillsDir = isGlobal
+function skillsTarget(isGlobal) {
+  return isGlobal
     ? path.join(os.homedir(), '.agents', 'skills')
     : path.join(process.cwd(), '.agents', 'skills');
+}
+
+function installCodex(isGlobal) {
+  const src = path.join(__dirname, '..');
+  const skillsDir = skillsTarget(isGlobal);
   const locationLabel = isGlobal
     ? skillsDir.replace(os.homedir(), '~')
     : skillsDir.replace(process.cwd(), '.');
@@ -189,6 +198,19 @@ function installCodex(isGlobal) {
   const count = installCodexSkills({ root: src, target: skillsDir });
   console.log(`  Installed ${green}${count} PAUL skills${reset} to ${cyan}${locationLabel}${reset}`);
   console.log(`\n  ${green}Done!${reset} Start Codex and invoke a skill such as ${cyan}$paul-plan${reset}.\n`);
+}
+
+function installJcode(isGlobal) {
+  const src = path.join(__dirname, '..');
+  const skillsDir = skillsTarget(isGlobal);
+  const locationLabel = isGlobal
+    ? skillsDir.replace(os.homedir(), '~')
+    : skillsDir.replace(process.cwd(), '.');
+
+  const { installJcodeSkills } = require('./jcode-skills');
+  const count = installJcodeSkills({ root: src, target: skillsDir });
+  console.log(`  Installed ${green}${count} PAUL skills${reset} to ${cyan}${locationLabel}${reset}`);
+  console.log(`\n  ${green}Done!${reset} Start Jcode and invoke a skill such as ${cyan}/paul-plan${reset}.\n`);
 }
 
 /**
@@ -219,7 +241,10 @@ function promptLocation() {
 }
 
 // Main
-if (hasCodex && (args.includes('--config-dir') || args.includes('-c') || args.some(arg => arg.startsWith('--config-dir=') || arg.startsWith('-c=')))) {
+if (hasCodex && hasJcode) {
+  console.error(`  ${yellow}Choose either --codex or --jcode, not both${reset}`);
+  process.exit(1);
+} else if ((hasCodex || hasJcode) && (args.includes('--config-dir') || args.includes('-c') || args.some(arg => arg.startsWith('--config-dir=') || arg.startsWith('-c=')))) {
   console.error(`  ${yellow}--config-dir is only supported for Claude Code installs${reset}`);
   process.exit(1);
 } else if (hasGlobal && hasLocal) {
@@ -230,6 +255,8 @@ if (hasCodex && (args.includes('--config-dir') || args.includes('-c') || args.so
   process.exit(1);
 } else if (hasCodex) {
   installCodex(hasGlobal);
+} else if (hasJcode) {
+  installJcode(hasGlobal);
 } else if (hasGlobal) {
   install(true);
 } else if (hasLocal) {
