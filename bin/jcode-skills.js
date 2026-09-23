@@ -20,6 +20,30 @@ function stripFrontmatter(content) {
   return content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
 }
 
+function jcodeAllowedTools(command) {
+  const match = command.match(/^allowed-tools:\s*\[([^\]]*)\]/m);
+  if (!match) return [];
+
+  const toolMap = {
+    Read: 'read',
+    Write: 'write',
+    Edit: 'edit',
+    Bash: 'bash',
+    Glob: 'glob',
+    Grep: 'grep',
+    Task: 'subagent',
+    WebSearch: 'websearch',
+    WebFetch: 'webfetch',
+  };
+
+  return match[1]
+    .split(',')
+    .map(tool => tool.trim())
+    .filter(Boolean)
+    .map(tool => toolMap[tool])
+    .filter(Boolean);
+}
+
 function adaptJcodeText(content) {
   return content
     .replace(/\$ARGUMENTS/g, 'the arguments supplied with this skill request')
@@ -103,6 +127,18 @@ function installJcodeSkills(options = {}) {
       ? `\n## Required PAUL resources\n\n${resolved.references.map(reference => `- ${reference}`).join('\n')}\n`
       : '';
     const description = adaptJcodeText(skillDescription(name, command));
+    const allowedTools = jcodeAllowedTools(command);
+    const allowedToolsFrontmatter = allowedTools.length
+      ? `allowed-tools: [${allowedTools.join(', ')}]\n`
+      : '';
+    const toolScope = allowedTools.length
+      ? `
+## Jcode tool scope
+
+For this PAUL workflow, keep tool use within: \`${allowedTools.join(', ')}\`.
+Questions for the user are asked directly in the conversation and do not require a tool.
+`
+      : '';
     const resourceResolution = `
 ## Jcode resource resolution
 
@@ -112,7 +148,7 @@ Before following any bundled resource reference, call \`skill_manage\` with
 \`Path\` as this skill's base directory, then resolve \`paul-framework/...\` from there.
 Do not guess the skill's filesystem path.
 `;
-    const skill = `---\nname: paul-${name}\ndescription: ${yaml(description)}\n---\n\n${resourceResolution.trim()}\n\n${body.trim()}\n${references}`;
+    const skill = `---\nname: paul-${name}\ndescription: ${yaml(description)}\n${allowedToolsFrontmatter}---\n\n${resourceResolution.trim()}\n${toolScope}\n${body.trim()}\n${references}`;
     fs.writeFileSync(path.join(skillDir, 'SKILL.md'), skill);
   }
 
@@ -128,6 +164,7 @@ if (require.main === module) {
 module.exports = {
   adaptJcodeText,
   installJcodeSkills,
+  jcodeAllowedTools,
   resolveResourceReferences,
   stripFrontmatter,
 };
