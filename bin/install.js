@@ -24,13 +24,14 @@ ${cyan}  ██████╗  █████╗ ██╗   ██╗██�
   ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝${reset}
 
   PAUL Framework ${dim}v${pkg.version}${reset}
-  Plan-Apply-Unify Loop for Claude Code
+  Plan-Apply-Unify Loop for Claude Code and Codex
 `;
 
 // Parse args
 const args = process.argv.slice(2);
 const hasGlobal = args.includes('--global') || args.includes('-g');
 const hasLocal = args.includes('--local') || args.includes('-l');
+const hasCodex = args.includes('--codex');
 
 // Parse --config-dir argument
 function parseConfigDirArg() {
@@ -62,6 +63,7 @@ if (hasHelp) {
     ${cyan}-g, --global${reset}              Install globally (to Claude config directory)
     ${cyan}-l, --local${reset}               Install locally (to ./.claude in current directory)
     ${cyan}-c, --config-dir <path>${reset}   Specify custom Claude config directory
+    ${cyan}    --codex${reset}                Install Codex skills (local by default; combine with --global)
     ${cyan}-h, --help${reset}                Show this help message
 
   ${yellow}Examples:${reset}
@@ -74,9 +76,13 @@ if (hasHelp) {
     ${dim}# Install to current project only${reset}
     npx paul-framework --local
 
+    ${dim}# Install PAUL skills for Codex in this project${reset}
+    npx paul-framework --codex
+
   ${yellow}What gets installed:${reset}
     commands/paul/     - Slash commands (/paul:init, /paul:plan, etc.)
     paul-framework/    - Templates, workflows, references, rules
+    .agents/skills/    - PAUL skills for Codex (with --codex)
 `);
   process.exit(0);
 }
@@ -167,6 +173,21 @@ function install(isGlobal) {
 `);
 }
 
+function installCodex(isGlobal) {
+  const src = path.join(__dirname, '..');
+  const skillsDir = isGlobal
+    ? path.join(os.homedir(), '.agents', 'skills')
+    : path.join(process.cwd(), '.agents', 'skills');
+  const locationLabel = isGlobal
+    ? skillsDir.replace(os.homedir(), '~')
+    : skillsDir.replace(process.cwd(), '.');
+
+  const { installCodexSkills } = require('./codex-skills');
+  const count = installCodexSkills({ root: src, target: skillsDir });
+  console.log(`  Installed ${green}${count} PAUL skills${reset} to ${cyan}${locationLabel}${reset}`);
+  console.log(`\n  ${green}Done!${reset} Start Codex and invoke a skill such as ${cyan}$paul-plan${reset}.\n`);
+}
+
 /**
  * Prompt for install location
  */
@@ -195,12 +216,17 @@ function promptLocation() {
 }
 
 // Main
-if (hasGlobal && hasLocal) {
+if (hasCodex && (args.includes('--config-dir') || args.includes('-c') || args.some(arg => arg.startsWith('--config-dir=') || arg.startsWith('-c=')))) {
+  console.error(`  ${yellow}--config-dir is only supported for Claude Code installs${reset}`);
+  process.exit(1);
+} else if (hasGlobal && hasLocal) {
   console.error(`  ${yellow}Cannot specify both --global and --local${reset}`);
   process.exit(1);
 } else if (explicitConfigDir && hasLocal) {
   console.error(`  ${yellow}Cannot use --config-dir with --local${reset}`);
   process.exit(1);
+} else if (hasCodex) {
+  installCodex(hasGlobal);
 } else if (hasGlobal) {
   install(true);
 } else if (hasLocal) {

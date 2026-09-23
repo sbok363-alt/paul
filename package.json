@@ -1,9 +1,12 @@
 {
   "name": "paul-framework",
   "version": "1.4.0",
-  "description": "Plan-Apply-Unify Loop - A structured AI-assisted development framework for Claude Code",
+  "description": "Plan-Apply-Unify Loop - A structured AI-assisted development framework for Claude Code and Codex",
   "bin": {
     "paul-framework": "bin/install.js"
+  },
+  "scripts": {
+    "test": "node test/codex-skills.test.js"
   },
   "files": [
     "bin",
@@ -16,6 +19,7 @@
   "keywords": [
     "claude",
     "claude-code",
+    "codex",
     "ai",
     "planning",
     "structured-development",

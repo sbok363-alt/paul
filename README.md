@@ -2,7 +2,7 @@
 
 # PAUL
 
-**Plan-Apply-Unify Loop** — Structured AI-assisted development for Claude Code.
+**Plan-Apply-Unify Loop** — Structured AI-assisted development for Claude Code and Codex.
 
 [![npm version](https://img.shields.io/npm/v/paul-framework?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/paul-framework)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
@@ -79,6 +79,16 @@ The installer prompts you to choose:
 1. **Location** — Global (all projects) or local (current project only)
 
 Verify with `/paul:help` inside Claude Code.
+
+### Codex
+
+Install PAUL's workflows as Codex skills in the current project:
+
+```bash
+npx paul-framework --codex
+```
+
+For all projects, use `npx paul-framework --codex --global`. Project skills are installed to `.agents/skills/`; global skills go to `~/.agents/skills/`. Codex discovers skills there and exposes them as `$paul-plan`, `$paul-apply`, `$paul-unify`, and the other PAUL commands. Each skill includes the relevant PAUL templates, workflows, references, and rules. The default installer and `--local` / `--global` Claude Code behavior remain unchanged.
 
 ### Quick Workflow
 
