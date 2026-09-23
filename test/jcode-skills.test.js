@@ -31,6 +31,10 @@ try {
   assert.ok(!generated.includes('/paul:'), 'generated resources must use Jcode skill names');
   assert.ok(!generated.includes('$paul-'), 'generated resources must not use Codex-only skill invocation');
   assert.ok(!generated.includes('$ARGUMENTS'), 'generated resources must not retain Claude argument placeholders');
+  assert.ok(!generated.includes('AskUserQuestion'), 'generated resources must not require Claude question tooling');
+  assert.ok(!generated.includes('Task tool'), 'generated resources must use Jcode subagent tooling');
+  assert.ok(!generated.includes('WebSearch'), 'generated resources must use Jcode websearch tooling');
+  assert.ok(!generated.includes('WebFetch'), 'generated resources must use Jcode webfetch tooling');
   assert.ok(!/claude/i.test(generated), 'generated resources must identify Jcode as the active agent');
   assert.ok(!generated.includes('anthropic.com'), 'generated resources must not add Anthropic commit attribution');
   assert.ok(!generated.includes('{{PAUL_OBSIDIAN_SYNC_SCRIPT}}'), 'Obsidian script path must be resolved');
