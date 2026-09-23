@@ -35,6 +35,11 @@ try {
   assert.ok(!generated.includes('Task tool'), 'generated resources must use Jcode subagent tooling');
   assert.ok(!generated.includes('WebSearch'), 'generated resources must use Jcode websearch tooling');
   assert.ok(!generated.includes('WebFetch'), 'generated resources must use Jcode webfetch tooling');
+  assert.ok(generated.includes('allowed-tools: [read, write, bash, glob]') || generated.includes('allowed-tools: [read, write, glob]'), 'generated skills should preserve mapped PAUL tool scopes');
+  assert.ok(!generated.includes('AskUserQuestion]'), 'unsupported question tooling must not survive in allowed-tools');
+  assert.ok(generated.includes('subagent'), 'Task-based PAUL workflows should map to Jcode subagent tooling');
+  assert.ok(generated.includes('websearch'), 'research workflows should map WebSearch to Jcode websearch');
+  assert.ok(generated.includes('webfetch'), 'research workflows should map WebFetch to Jcode webfetch');
   assert.ok(!/claude/i.test(generated), 'generated resources must identify Jcode as the active agent');
   assert.ok(!generated.includes('anthropic.com'), 'generated resources must not add Anthropic commit attribution');
   assert.ok(!generated.includes('{{PAUL_OBSIDIAN_SYNC_SCRIPT}}'), 'Obsidian script path must be resolved');
