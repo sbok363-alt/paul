@@ -38,6 +38,14 @@ try {
     generated.includes('/paul-plan') || generated.includes('/paul-apply') || generated.includes('/paul-unify'),
     'generated resources should contain Jcode slash-skill invocations',
   );
+  assert.ok(
+    generated.includes('{"action":"read","name":"paul-plan"}'),
+    'generated skills should resolve their resource base through skill_manage',
+  );
+  assert.ok(
+    generated.includes('Do not guess the skill\'s filesystem path.'),
+    'generated skills should forbid guessed resource paths',
+  );
 
   for (const name of ['init', 'plan', 'apply', 'unify']) {
     assert.ok(
