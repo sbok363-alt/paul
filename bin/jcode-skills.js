@@ -127,7 +127,7 @@ function installJcodeSkills(options = {}) {
       ? `\n## Required PAUL resources\n\n${resolved.references.map(reference => `- ${reference}`).join('\n')}\n`
       : '';
     const description = adaptJcodeText(skillDescription(name, command));
-    const allowedTools = jcodeAllowedTools(command);
+    const allowedTools = [...new Set(['skill_manage', ...jcodeAllowedTools(command)])];
     const allowedToolsFrontmatter = allowedTools.length
       ? `allowed-tools: [${allowedTools.join(', ')}]\n`
       : '';
