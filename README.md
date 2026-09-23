@@ -90,6 +90,16 @@ npx paul-framework --codex
 
 For all projects, use `npx paul-framework --codex --global`. Project skills are installed to `.agents/skills/`; global skills go to `~/.agents/skills/`. Codex discovers skills there and exposes them as `$paul-plan`, `$paul-apply`, `$paul-unify`, and the other PAUL commands. Each skill includes the relevant PAUL templates, workflows, references, and rules. The default installer and `--local` / `--global` Claude Code behavior remain unchanged.
 
+### Jcode
+
+Jcode natively discovers project and global skills from the same shared `.agents/skills/` locations, but invokes them with slash syntax. Install the Jcode-adapted PAUL skills in the current project with:
+
+```bash
+npx paul-framework --jcode
+```
+
+For all projects, use `npx paul-framework --jcode --global`. Invoke PAUL as `/paul-plan`, `/paul-apply`, `/paul-unify`, and the other generated skills. The Jcode adapter rewrites PAUL's cross-workflow command references to Jcode slash-skill syntax while keeping the same PAUL resources and optional Obsidian mirror behavior.
+
 ### Obsidian mirror (optional)
 
 PAUL can mirror each project's `.paul/` notes into a separate Obsidian vault. The project files remain the source of truth. Configure the vault once, using the directory that contains `.obsidian`:
