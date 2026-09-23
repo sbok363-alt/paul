@@ -18,6 +18,7 @@ Creates PROJECT.md, STATE.md, and ROADMAP.md populated from conversation - user 
 @~/.claude/paul-framework/templates/PROJECT.md
 @~/.claude/paul-framework/templates/STATE.md
 @~/.claude/paul-framework/templates/ROADMAP.md
+@~/.claude/paul-framework/references/obsidian-sync.md
 </execution_context>
 
 <context>
@@ -44,6 +45,10 @@ The workflow implements conversational setup:
 - End with exactly ONE next action
 - Build momentum into planning phase
 </process>
+
+<after_process>
+Follow the Obsidian mirror reference after all `.paul/` files are saved.
+</after_process>
 
 <success_criteria>
 - [ ] .paul/ directory created

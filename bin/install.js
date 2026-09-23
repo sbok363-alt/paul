@@ -100,7 +100,7 @@ function expandTilde(filePath) {
 /**
  * Recursively copy directory, replacing paths in .md files
  */
-function copyWithPathReplacement(srcDir, destDir, pathPrefix) {
+function copyWithPathReplacement(srcDir, destDir, pathPrefix, obsidianScript) {
   fs.mkdirSync(destDir, { recursive: true });
 
   const entries = fs.readdirSync(srcDir, { withFileTypes: true });
@@ -110,11 +110,12 @@ function copyWithPathReplacement(srcDir, destDir, pathPrefix) {
     const destPath = path.join(destDir, entry.name);
 
     if (entry.isDirectory()) {
-      copyWithPathReplacement(srcPath, destPath, pathPrefix);
+      copyWithPathReplacement(srcPath, destPath, pathPrefix, obsidianScript);
     } else if (entry.name.endsWith('.md')) {
       // Replace ~/.claude/ with the appropriate prefix in markdown files
       let content = fs.readFileSync(srcPath, 'utf8');
       content = content.replace(/~\/\.claude\//g, pathPrefix);
+      content = content.replace(/\{\{PAUL_OBSIDIAN_SYNC_SCRIPT\}\}/g, obsidianScript);
       fs.writeFileSync(destPath, content);
     } else {
       fs.copyFileSync(srcPath, destPath);
@@ -141,6 +142,7 @@ function install(isGlobal) {
   const pathPrefix = isGlobal
     ? (configDir ? `${claudeDir}/` : '~/.claude/')
     : './.claude/';
+  const obsidianScript = path.join(claudeDir, 'paul-framework', 'obsidian-sync.js');
 
   console.log(`  Installing to ${cyan}${locationLabel}${reset}\n`);
 
@@ -151,7 +153,7 @@ function install(isGlobal) {
   // Copy src/commands to commands/paul
   const commandsSrc = path.join(src, 'src', 'commands');
   const commandsDest = path.join(commandsDir, 'paul');
-  copyWithPathReplacement(commandsSrc, commandsDest, pathPrefix);
+  copyWithPathReplacement(commandsSrc, commandsDest, pathPrefix, obsidianScript);
   console.log(`  ${green}✓${reset} Installed commands/paul`);
 
   // Copy src/* (except commands) to paul-framework/
@@ -163,9 +165,10 @@ function install(isGlobal) {
     const dirSrc = path.join(src, 'src', dir);
     const dirDest = path.join(skillDest, dir);
     if (fs.existsSync(dirSrc)) {
-      copyWithPathReplacement(dirSrc, dirDest, pathPrefix);
+      copyWithPathReplacement(dirSrc, dirDest, pathPrefix, obsidianScript);
     }
   }
+  fs.copyFileSync(path.join(src, 'bin', 'obsidian-sync.js'), path.join(skillDest, 'obsidian-sync.js'));
   console.log(`  ${green}✓${reset} Installed paul-framework`);
 
   console.log(`

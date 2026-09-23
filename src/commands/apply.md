@@ -16,6 +16,7 @@ Executes tasks in sequence, pauses at checkpoints for user input, reports comple
 <execution_context>
 @~/.claude/paul-framework/workflows/apply-phase.md
 @~/.claude/paul-framework/references/checkpoints.md
+@~/.claude/paul-framework/references/obsidian-sync.md
 </execution_context>
 
 <context>
@@ -74,6 +75,10 @@ After all tasks complete:
 </step>
 
 </process>
+
+<after_process>
+Follow the Obsidian mirror reference after all `.paul/` files are saved.
+</after_process>
 
 <success_criteria>
 - [ ] All tasks executed

@@ -2,7 +2,7 @@
 name: paul:unify
 description: Reconcile plan vs actual and close the loop
 argument-hint: "[plan-path]"
-allowed-tools: [Read, Write, AskUserQuestion]
+allowed-tools: [Read, Write, Bash, AskUserQuestion]
 ---
 
 <objective>
@@ -16,6 +16,7 @@ Creates SUMMARY.md documenting what was built, decisions made, and any deferred 
 <execution_context>
 @~/.claude/paul-framework/workflows/unify-phase.md
 @~/.claude/paul-framework/templates/SUMMARY.md
+@~/.claude/paul-framework/references/obsidian-sync.md
 </execution_context>
 
 <context>
@@ -79,6 +80,10 @@ Next: [phase complete message or next plan]
 </step>
 
 </process>
+
+<after_process>
+Follow the Obsidian mirror reference after all `.paul/` files are saved.
+</after_process>
 
 <success_criteria>
 - [ ] SUMMARY.md created

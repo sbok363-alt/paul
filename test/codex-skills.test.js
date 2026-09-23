@@ -32,6 +32,10 @@ try {
   assert.ok(!generated.includes('$ARGUMENTS'), 'generated resources must not retain Claude argument placeholders');
   assert.ok(!/claude/i.test(generated), 'generated resources must identify Codex as the active agent');
   assert.ok(!generated.includes('anthropic.com'), 'generated resources must not add Anthropic commit attribution');
+  assert.ok(!generated.includes('{{PAUL_OBSIDIAN_SYNC_SCRIPT}}'), 'Obsidian script path must be resolved');
+  for (const name of ['init', 'plan', 'apply', 'unify']) {
+    assert.ok(fs.existsSync(path.join(skillsRoot, `paul-${name}`, 'obsidian-sync.js')), `${name} must bundle the sync script`);
+  }
 
   console.log(`ok - generated ${count} Codex skills without Claude-only tokens`);
 } finally {

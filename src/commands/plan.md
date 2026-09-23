@@ -2,7 +2,7 @@
 name: paul:plan
 description: Enter PLAN phase for current or new plan
 argument-hint: "[phase-plan]"
-allowed-tools: [Read, Write, Glob, AskUserQuestion]
+allowed-tools: [Read, Write, Bash, Glob, AskUserQuestion]
 ---
 
 <objective>
@@ -15,6 +15,7 @@ Create or continue a PLAN for the specified phase.
 @~/.claude/paul-framework/workflows/plan-phase.md
 @~/.claude/paul-framework/templates/PLAN.md
 @~/.claude/paul-framework/references/plan-format.md
+@~/.claude/paul-framework/references/obsidian-sync.md
 </execution_context>
 
 <context>
@@ -28,6 +29,10 @@ $ARGUMENTS
 <process>
 Follow workflow: @~/.claude/paul-framework/workflows/plan-phase.md
 </process>
+
+<after_process>
+Follow the Obsidian mirror reference after all `.paul/` files are saved.
+</after_process>
 
 <success_criteria>
 - [ ] PLAN.md created in correct phase directory

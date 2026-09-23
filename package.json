@@ -3,10 +3,11 @@
   "version": "1.4.0",
   "description": "Plan-Apply-Unify Loop - A structured AI-assisted development framework for Claude Code and Codex",
   "bin": {
-    "paul-framework": "bin/install.js"
+    "paul-framework": "bin/install.js",
+    "paul-obsidian-sync": "bin/obsidian-sync.js"
   },
   "scripts": {
-    "test": "node test/codex-skills.test.js"
+    "test": "node test/codex-skills.test.js && node test/obsidian-sync.test.js"
   },
   "files": [
     "bin",

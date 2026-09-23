@@ -47,7 +47,8 @@ function copyResource(category, file, root, skillDir, copied) {
   const source = fs.readFileSync(sourcePath, 'utf8');
   const resolved = resolveResourceReferences(source, root, skillDir, copied);
   fs.mkdirSync(path.dirname(destination), { recursive: true });
-  fs.writeFileSync(destination, adaptCodexText(resolved.body));
+  fs.writeFileSync(destination, adaptCodexText(resolved.body)
+    .replace(/\{\{PAUL_OBSIDIAN_SYNC_SCRIPT\}\}/g, path.join(skillDir, 'obsidian-sync.js')));
 }
 
 function resolveResourceReferences(content, root, skillDir, copied = new Set()) {
@@ -76,6 +77,9 @@ function installCodexSkills(options = {}) {
     const command = fs.readFileSync(commandPath, 'utf8');
     const skillDir = path.join(target, `paul-${name}`);
     fs.mkdirSync(skillDir, { recursive: true });
+    if (command.includes('references/obsidian-sync.md')) {
+      fs.copyFileSync(path.join(root, 'bin', 'obsidian-sync.js'), path.join(skillDir, 'obsidian-sync.js'));
+    }
     const resolved = resolveResourceReferences(stripFrontmatter(command), root, skillDir);
     const body = adaptCodexText(resolved.body);
     const references = resolved.references.length
