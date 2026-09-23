@@ -1,13 +1,13 @@
 {
   "name": "paul-framework",
   "version": "1.4.0",
-  "description": "Plan-Apply-Unify Loop - A structured AI-assisted development framework for Claude Code and Codex",
+  "description": "Plan-Apply-Unify Loop - A structured AI-assisted development framework for Claude Code, Codex, and Jcode",
   "bin": {
     "paul-framework": "bin/install.js",
     "paul-obsidian-sync": "bin/obsidian-sync.js"
   },
   "scripts": {
-    "test": "node test/codex-skills.test.js && node test/obsidian-sync.test.js"
+    "test": "node test/codex-skills.test.js && node test/jcode-skills.test.js && node test/obsidian-sync.test.js"
   },
   "files": [
     "bin",
@@ -21,6 +21,7 @@
     "claude",
     "claude-code",
     "codex",
+    "jcode",
     "ai",
     "planning",
     "structured-development",
